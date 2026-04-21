@@ -1,0 +1,81 @@
+ORG 190
+	TEMP: db	;variável temporária para armazenar informações
+
+ORG 192
+	ADQ: db 
+	DES: db 
+	HIG: db 	
+	WID: db 
+	NUM: db
+ 		
+ORG h00	
+	LDR X, #0
+	LDR A, #0	;incializando variáveis 
+	STR A, ADQ
+	STR A, DES
+
+func: 	LDR A, NUM	;início da função principal, junto ao teste de NUM para identificar se todas as tripas foram preenchidas
+	JZ fim
+	LDR A, HIG
+	SUB A, 197, X	;LDA em HIG e teste para ver quantos azulejos faltam ou estão sobrando
+	STR A, TEMP	
+	JN men		;se for negativo desviamos para uma função adequada
+	ADD X, #1
+	LDR A, TEMP
+	LDR B, 197, X
+
+cmcP:	SUB B, #1	;cmcP serve para calcularmos quantos azulejos estão faltando para terminar a parede junto ao segundo end. da tripla(largura)
+	JZ terP		;implementei a multiplicação com o algoritmo de somas sucessivas, quando o RB(largura) chegar a 0, desviamos para terP
+	ADD A, TEMP
+	JMP cmcP
+
+men:	ADD X, #1	;men prepara os valores negativos obtidos em func para cmcM operar corretamente
+	LDR A, TEMP
+	NEG A
+	STR A, TEMP
+	LDR B, 197, X
+
+cmcM:	SUB B, #1	;cmcP serve para calcularmos quantos azulejos estão sobrando na parede junto ao segundo end. da tripla(largura)
+	JZ terM		;implementei a multiplicação com o algoritmo de somas sucessivas, quando o RB(largura) chegar a 0, desviamos para terM
+	ADD A, TEMP
+	JMP cmcM
+
+terP:	ADD X, #1	;terP serve apenas para colocar os valores obtidos em seus lugares corretos
+	STR A, 197, X	;faz a soma do valor adquirido em cmcP à ADQ e coloca no terceiro end. da tripla 
+	ADD A, ADQ	;subtrai um de NUM para dar procedência nas triplas
+	STR A, ADQ
+	LDR A, NUM
+	SUB A, #1
+	STR A, NUM
+	ADD X, #1
+	JMP func
+
+terM:	ADD X, #1	;terM serve apenas para colocar os valores obtidos em seus lugares corretos
+	ADD A, DES	;faz a soma do valor adquirido em cmcM à DES e coloca no terceiro end. da tripla
+	STR A, DES	;subtrai um de NUM para dar procedência nas triplas
+	LDR A, #0
+	STR A, 197, X
+	LDR A, NUM
+	SUB A, #1
+	STR A, NUM
+	ADD X, #1
+	JMP func
+	
+fim:	HLT
+
+;Lógica:
+
+;1) Criar uma função para calcular as triplas, usando a variável NUM como quantidade de loops a serem feitos.
+
+;- Para calcular quantos azuleijos estão faltando, pegarei HIG e subtrairei pela altura, caso seja um numero positivo, 
+;multiplico pela largura e insiro o valor resultante no terceiro end. da tripla e somo o valor em ADQ, caso seja
+;um numero negativo, também multiplico pela largura, mas ao invés de colar na propria tripla, iremos somar o valor em DES e adicionar 0 à tripla 
+
+;2) Dentro da função faremos o primeiro calculo e logo apos deveremos verificar se o valor é positivo ou negativo, implementarei um desvio caso seja negativo.
+
+;3) Passo a passo: I - pegamos o valor da altura na tripla e subtraímos de HIG. II - testamos para ver se é positivo ou negativo e desviamos. 
+;III - multiplico pela largura e somo ao ADQ ou DES. 
+;IV - salvo no ultimo espaço da tripla o valor resultante. 
+;V - somo 1 em RX nos passos I, III e IV.
+
+;- Usei o modo indexado junto ao ADD X, #1 em todo o programa para navegar endereço por endereço das triplas, pois percebi que essa forma daria certo seguindo a lógica acima 

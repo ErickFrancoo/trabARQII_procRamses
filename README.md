@@ -1,2 +1,3 @@
 # trabARQII_procRamses
 Algoritmo em Assembly para o processador Ramses que calcula a quantidade de azulejos (faltantes ou excedentes) utilizando endereçamento indexado e multiplicação por somas sucessivas na memória.
+Este repositório contém um algoritmo desenvolvido em linguagem Assembly para a arquitetura didática Ramses. O programa processa variáveis e triplas de dados diretamente na memória para calcular o déficit ou excesso de azulejos em uma construção. A implementação destaca o controle de fluxo com desvios condicionais, manipulação de memória via endereçamento indexado e a criação de uma rotina de multiplicação por somas sucessivas para suprir a ausência de uma instrução nativa na arquitetura.
